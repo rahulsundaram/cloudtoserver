@@ -21,6 +21,7 @@
 # Author: Kushal Das <kdas@redhat.com>
 
 
+from __future__ import print_function
 import os
 import sys
 import argparse
@@ -33,8 +34,8 @@ to convert a Fedora cloud instance into a Fedora server instance.
     cmd = "yum -y swap -- install fedora-release-server firewalld-config-server -- remove fedora-release-cloud firewalld-config-standard"
     ret_code = os.system(cmd)
     if ret_code != 0:
-        print "There was issues while converting to Fedora Server. Please report the error"
-        print "Use https://paste.fedoraproject.org for pasting the output from this command."
+        print( "There was issues while converting to Fedora Server. Please report the error")
+        print( "Use https://paste.fedoraproject.org for pasting the output from this command.")
         return
 
     # Now we now that fedora-release server is in the system
@@ -42,7 +43,7 @@ to convert a Fedora cloud instance into a Fedora server instance.
     cmd = "yum install @^server-product-environment -y"
     ret_code = os.system(cmd)
     if ret_code != 0:
-        print "Error while installing packages. Please check the network."
+        print ("Error while installing packages. Please check the network.")
         return
 
 
@@ -55,9 +56,13 @@ def main():
                         action="store_true")
     args = parser.parse_args()
     # First let us give some warning to the user.
-    print "This will try to convert your Fedora cloud instance to a Fedora Server instance."
+    print ("This will try to convert your Fedora cloud instance to a Fedora Server instance.")
     while True:
-        inp = raw_input("Continue? y/N: ")
+        try:
+            input = raw_input
+        except NameError:
+            pass
+        inp = input("Continue? y/N: ")
         inp = inp.strip()
         if inp == 'N':
             return
@@ -66,7 +71,7 @@ def main():
     # Now the normal flow of the application
     convert_to_server()
     if args.stopci:
-        print "Disabling cloud-init service on reboot."
+        print ("Disabling cloud-init service on reboot.")
         cmd = "systemctl disable cloud-init.service"
         os.system(cmd)
 
