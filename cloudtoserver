@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-
+"""
+This script converts a Fedora Cloud instance into a Fedora Server instance.
+"""
 # Copyright 2014  Red Hat, Inc.
 #
 # This copyrighted material is made available to anyone wishing to use,
@@ -22,24 +24,28 @@
 
 
 import os
-import sys
 import argparse
 
 VERSION = '0.1'
 
+
 def convert_to_server():
-    """This function tries to run a series of yum commands
-to convert a Fedora cloud instance into a Fedora server instance.
     """
-    cmd = "yum -y swap -- install fedora-release-server firewalld-config-server -- remove fedora-release-cloud firewalld-config-standard"
+    This function tries to run a series of yum commands to convert a Fedora \
+    cloud instance into a Fedora server instance.
+    """
+    cmd = "yum -y swap -- install fedora-release-server firewalld-config-server\
+          -- remove fedora-release-cloud firewalld-config-standard"
     ret_code = os.system(cmd)
     if ret_code != 0:
-        print "There was issues while converting to Fedora Server. Please report the error"
-        print "Use https://paste.fedoraproject.org for pasting the output from this command."
+        print "There was issues while converting to Fedora Server. Please \
+              report the error"
+        print "Use https://paste.fedoraproject.org for pasting the output \
+              from this command."
         return
 
     # Now we now that fedora-release server is in the system
-    # We will try to pull down the rest of the packages. 
+    # We will try to pull down the rest of the packages.
     cmd = "yum install @^server-product-environment -y"
     ret_code = os.system(cmd)
     if ret_code != 0:
@@ -52,17 +58,19 @@ def main():
     Main function of the script.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--disable-cloud-service", help="Disable cloud-init service",
+    parser.add_argument("-d", "--disable-cloud-service",
+                        help="Disable cloud-init service",
                         action="store_true")
-    parser.add_argument("-v", "--version", help="Prints the version of the tool",
-                        action="store_true")
+    parser.add_argument("-v", "--version", help="Prints the version of the \
+                        tool", action="store_true")
     args = parser.parse_args()
 
     if args.version:
         print 'cloudtoserver version %s' % VERSION
         return
     # First let us give some warning to the user.
-    print "This will try to convert your Fedora cloud instance to a Fedora Server instance."
+    print "This will try to convert your Fedora cloud instance to a Fedora \
+           Server instance."
     while True:
         inp = raw_input("Continue? y/N: ")
         inp = inp.strip()
@@ -73,7 +81,8 @@ def main():
     # Now the normal flow of the application
     convert_to_server()
     if args.disable_cloud_service:
-        print "Disabling cloud-init service. This won't run anymore by default."
+        print "Disabling cloud-init service. \
+              This won't run anymore by default."
         cmd = "systemctl disable cloud-init.service"
         os.system(cmd)
 
